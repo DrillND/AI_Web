@@ -16,18 +16,30 @@
         <%- include('./header') %>
     </header>
     <main>
-        <div>Teachable Machine Image Model</div>
-        <button type="button" onclick="init()">Start</button>
-        <div id="webcam-container"></div>
-        <div id="label-container"></div>
-        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+        <div style="text-align: center;">
+
+            <div>Teachable Machine Image Model</div>
+
+            <!--<button type="button" onclick="init()">Start</button>-->
+            <div id="webcam-container"></div>
+
+            <div id="label-container"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
         <script
-            src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+            src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
         <script type="text/javascript">
-            const URL = "https://teachablemachine.withgoogle.com/models/610hqkejV/";
+            // More API functions here:
+            // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+            // the link to your model provided by Teachable Machine export panel
+            const URL = "https://teachablemachine.withgoogle.com/models/IMN572fHy/";
+
             let model, webcam, labelContainer, maxPredictions;
 
             // Load the image model and setup the webcam
+            init()
             async function init() {
                 const modelURL = URL + "model.json";
                 const metadataURL = URL + "metadata.json";
@@ -39,15 +51,10 @@
                 model = await tmImage.load(modelURL, metadataURL);
                 maxPredictions = model.getTotalClasses();
 
-                // 카메라 변경을 위해 추가해줘야 함. jgp
-                const devices = await navigator.mediaDevices.enumerateDevices()
-                console.log(devices);
                 // Convenience function to setup a webcam
                 const flip = true; // whether to flip the webcam
-                webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
-                // 카메라 변경을 위해 수정해줘야 함. jgp
-                // 노트북의 경우 일반적으로 내장 카메라가 devices[0], usb 카메라가 devices[1]로 할당됨
-                await webcam.setup({ deviceId: devices[1].deviceId }); // request access to the webcam
+                webcam = new tmImage.Webcam(400, 400, flip); // width, height, flip
+                await webcam.setup(); // request access to the webcam
                 await webcam.play();
                 window.requestAnimationFrame(loop);
 
@@ -65,8 +72,11 @@
                 window.requestAnimationFrame(loop);
             }
 
+            rockcnt = 0;
+            papercnt = 0;
+            sessorcnt = 0;
 
-            nonMaskCnt = 0;
+            // run the webcam image through the image model
             async function predict() {
                 // predict can take in an image, video or canvas html element
                 const prediction = await model.predict(webcam.canvas);
@@ -74,19 +84,36 @@
                     const classPrediction =
                         prediction[i].className + ": " + prediction[i].probability.toFixed(2);
                     labelContainer.childNodes[i].innerHTML = classPrediction;
-                    if (prediction[i].className == "nonmask" && prediction[i].probability > 0.5) {
-                        nonMaskCnt++;
+                    if (prediction[i].className == "rock" && prediction[i].probability > 0.5) {
+                        console.log('rock');
+                        rockcnt++;
                     }
-                    console.log(nonMaskCnt);
+                    if (prediction[i].className == "paper" && prediction[i].probability > 0.5) {
+                        console.log('paper');
+                        papercnt++;
+                    }
+                    if (prediction[i].className == "sessor" && prediction[i].probability > 0.5) {
+                        console.log('sessor');
+                        sessorcnt++;
+                    }
                 }
-                if (nonMaskCnt >= 120) {
+                if (rockcnt >= 80) {
                     console.log('audio start'); //F12
-                    nonMaskCnt = 0;
-                    var audio = new Audio('alert.m4a');
-                    audio.play();
+                    rockcnt = 0;
+                    
+                  
+
+
+                   
                 }
 
             }
+
+
+
+
+
+
         </script>
     </main>
 </body>

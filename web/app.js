@@ -36,6 +36,9 @@ const userRouter    = require('./routes/user');
 const newsRouter    = require('./routes/news');
 const wifiRouter = require('./routes/wifi');
 const maskRouter    = require('./routes/mask');
+const rpsRouter = require('./routes/rps');
+const tfjsRouter    = require('./routes/tfjs');
+const sttRouter    = require('./routes/stt');
 
 //라우트 설정
 app.use('/', mainRouter);
@@ -44,8 +47,12 @@ app.use('/user', userRouter);
 app.use('/news', newsRouter);
 app.use('/wifi', wifiRouter);
 app.use('/mask', maskRouter);
+app.use('/rps', rpsRouter);
+app.use('/tfjs', tfjsRouter);
+app.use('/stt', sttRouter);
 
 const PORT = 8080;
 app.listen(PORT, function() { //무한대기.. 요청들어오면 쓰레드를 던진다.
     console.log('Listening on port: ', PORT);
 });
+
